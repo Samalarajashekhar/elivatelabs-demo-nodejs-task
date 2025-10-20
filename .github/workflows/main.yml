@@ -1,0 +1,27 @@
+name: Build & Push  to Dockerhub
+
+on:
+  push:
+    branches: [ "main" ]
+    
+  pull_request:
+    branches: [ "main" ]
+
+
+jobs:
+
+  build:
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Log in to DockerHub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+    - name: Build and Push the Docker image
+      run: | 
+        docker build . --file Dockerfile --tag ${{ vars.DOCKER_REGISTRY }}/${{ vars.DOCKER_IMAGE }}:${{ github.run_number }}
+        docker push ${{ vars.DOCKER_REGISTRY }}/${{ vars.DOCKER_IMAGE }}:${{ github.run_number }}
+  
+  
